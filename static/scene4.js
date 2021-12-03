@@ -3,11 +3,7 @@ let resolution;
 
 let g = {
     A: [
-        [40, 10, 20],
-        ["B"]
-    ],
-    B: [
-        [-20, 10, -40],
+        [0, 10, 0],
         []
     ],
 }
@@ -30,16 +26,16 @@ var colors = [
 	0x70c1b3
 ];
 
+var clock = new THREE.Clock();
+
 init();
 grid();
 obstacles();
 graph();
-arrows();
 animate();
 
 function init() {
     container = document.getElementById( 'container' );
-    
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xcccccc );
@@ -80,30 +76,30 @@ function grid() {
     const geometry = new THREE.BufferGeometry().setFromPoints( points );
     var Y = new THREE.Line( geometry, material )
     scene.add(Y);
+
 }
 
 function obstacles() {
-    let cubeGeometry = new THREE.BoxGeometry (50,50,50);
+    let cubeGeometry = new THREE.BoxGeometry (50,5,80);
     let cubeMaterial = new THREE.MeshPhongMaterial({color: 0xff0f0f, transparent: true, opacity: 0.5});
     let cube = new THREE.Mesh (cubeGeometry, cubeMaterial);
 
-    cube.position.set (25, 25, -25);
+    cube.position.set (35, 2.5, 0);
     scene.add (cube);
-}
 
-function arrows() {
-    const geometry = new THREE.PlaneGeometry( 200, 200 );
-    const material = new THREE.MeshPhongMaterial( {color: 0xff00ff, transparent: true, opacity: 0.5, side: THREE.DoubleSide} );
-    const plane = new THREE.Mesh( geometry, material );
-    plane.rotateX(Math.PI/2)
-    plane.translateZ(-10)
-    scene.add( plane );
-    // makeLine([0,10,-20,0,10,0], 0x00ffff)
-    // makeLine([0,10,-20,0,50,-20], 0x00ffff)
-    // makeLine([0,10,-20,0,10,-50], 0x00ffff)
-    // makeLine([0,10,-20,0,0,-20], 0x00ffff)
-    // makeLine([0,10,0,40,10,20], 0x00ffff)
-    // makeNode( [0, 10, 0] )
+    let wall1G = new THREE.BoxGeometry(50,40,5);
+    let wall2G = new THREE.BoxGeometry(50,40,5);
+    let roofG = new THREE.BoxGeometry( 50,5,80);
+    let wall1 = new THREE.Mesh(wall1G, cubeMaterial)
+    let wall2 = new THREE.Mesh(wall2G, cubeMaterial)
+    let roof = new THREE.Mesh(roofG, cubeMaterial)
+
+    wall1.position.set(35, 25, 37.5)
+    wall2.position.set(35, 25, -37.5)
+    roof.position.set(35,47.5, 0);
+    scene.add(wall1)
+    scene.add(wall2)
+    scene.add(roof)
 }
 
 
@@ -119,7 +115,7 @@ function graph() {
             makeLine(line, 0xffffff)
         });
     }
-    makeLine([20,10,0,0,10,-20], 0xff0000)
+    // makeLine([-40,10,-40,-20,50,-20], 0x00ff00)
 }
 
 function makeNode( pos ) {
@@ -175,28 +171,7 @@ window.addEventListener( 'resize', onWindowResize );
 function animate() {
     controls.update();
     requestAnimationFrame ( animate );  
+
+    scene.rotation.y -= 0.25*clock.getDelta();
     renderer.render (scene, camera);
-}
-
-function not() {
-    var help = [ 10, 0, 0, -10, 0, 0]
-    makeLine( help )
-
-    const points = [];
-    points.push( new THREE.Vector3( -10, 0, 0 ) );
-    points.push( new THREE.Vector3( 0, 10, 0 ) );
-    points.push( new THREE.Vector3( 10, 0, 0 ) );
-
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-    const line = new THREE.Line( geometry );
-    scene.add( line );
-
-    var cubeGeometry = new THREE.BoxGeometry (3,3,3);
-    var cubeMaterial = new THREE.MeshBasicMaterial ({color: 0x1ec876});
-    cube = new THREE.Mesh (cubeGeometry, cubeMaterial);
-
-    cube.position.set (0, 0, 13);
-    scene.add (cube);
-
 }
